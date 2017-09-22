@@ -42,6 +42,16 @@ def dv_format(record,tg,ts):      # Digital Voice Format
     # lon = record[13]
     return [callsign+" "+tg+"/"+ts+" "+location, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "000.0", "000.0", "180", "Off", "Off", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts]
  
+def write_line(out_db, line):       # Write a given line (string) to the out_db file
+    csv.writer(out_db, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL).writerow(line)
+        
+def ishomerepeater(callsign):       # Boolean: Whether the given call sign matches one of the home repeaters
+    retval = False
+    for rptcall in home_repeaters:
+        if callsign.upper() == rptcall.upper():
+            retval = True
+    return retval
+
 # Check arguments handed to script
 if len(sys.argv) > 1 and sys.argv[1].endswith(".csv"):          # One filename handed to script OK
         infile = sys.argv[1]
@@ -56,8 +66,9 @@ else:							        # No filenames handed to script NOT OK
     sys.exit("\nUsage: "+sys.argv[0]+" import_file.csv [optional: home_repeater]")
 
 # Generate output file name
-count = len(infile) - 4
-outfile = infile[:count] + "_conv.csv"
+#count = len(infile) - 4
+#outfile = infile[:count] + "_conv.csv"
+outfile = "dmr-contacts.csv"
 print("\nRunning conversion of "+infile+ " to "+outfile)
 
 # Open input and output files
@@ -71,21 +82,15 @@ for record in in_db:
         mode = record[5]
 
         if band == "70CM" and mode == "AV":
-            csv.writer(out_db, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL).writerow(av_format(record))
+            write_line(out_db, av_format(record))
         
         elif band == "70CM" and ( mode == "DV" or mode == "MULTI" ):
-            
-            ishomerepeater = False
-            for rptcall in home_repeaters:
-                if callsign.upper() == rptcall.upper():
-                    ishomerepeater = True
-
-            if ishomerepeater:
+            if ishomerepeater(callsign):
                 talkgroups = [(1,1), (2,1), (9,1), (9,2), (13,1), (80,1), (81,1), (82,1), (83,1), (84,1), (113,1), (123,1), (129,1), (235,1), (801,2), (810,2), (820,2), (840,2), (850,2), (9990,2)]
             else:
                 talkgroups = [(9,2)]
             for talkgroup in talkgroups:
-                csv.writer(out_db, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL).writerow(dv_format(record, str(talkgroup[0]), str(talkgroup[1]) ))
+                write_line(out_db, dv_format(record, str(talkgroup[0]), str(talkgroup[1]) ))
 
 # Close output file
 out_db.close()
