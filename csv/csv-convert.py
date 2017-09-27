@@ -1,6 +1,18 @@
 import sys
 import csv
 
+# Set talkgroups
+# --------------
+#
+# Set which talkgroups you want to be added as channels for each home repeater.
+# Each pair represents a talkgroup + timeslot combination. Timeslot must be either 1 or 2 for DMR!
+
+home_tgs = [(1,1), (2,1), (8,2), (9,1), (9,2), (13,1), (80,1), (81,1), (82,1), (83,1), (84,1), (113,1), (123,1), (129,1), (235,1), (801,2), (810,2), (820,2), (840,2), (850,2), (9990,2)]
+
+# Set which talkgroups should be added as channels for all other UK repeaters.
+other_tgs = [(9,2)]
+
+
 # Define functions
 def av_format(record):      # Analog Voice Format
     callsign = record[0]
@@ -52,6 +64,10 @@ def ishomerepeater(callsign):       # Boolean: Whether the given call sign match
             retval = True
     return retval
 
+def addcontacts(out_db):
+    for tg in home_tgs:
+        write_line(out_db,[str(tg[0]),"TG"+str(tg[0]),"Group Call","No"])
+
 def addsimplex(out_db):
 
     # Analogue PMR uses sixteen FM channels separated by 12.5 kHz from each other. 
@@ -75,7 +91,7 @@ def addsimplex(out_db):
         write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
 
     # UK Amateur Radio UHF 430-440 MHz
-
+    # DMR Simplex Channels at 438 MHz. DV Calling @ 438.6125 as per RSGB Band Plan
     for dmrchan in [(1,"438.587500"), (2,"438.600000"), (3,"438.612500"), (4,"438.625000"), (5,"438.637500"), (6,"438.650000"), (7,"438.662500"), (8,"438.675000")]:
         memname = "DMR"+str(dmrchan[0])+" DV Simplex"
         if dmrchan[0] == 3:
@@ -86,7 +102,8 @@ def addsimplex(out_db):
         ts = "1"
         ccode = "1"
         write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
-
+    
+    # FM/DV Simplex Channels at 433 MHz as per RSGB Band Plan
     for dmrchan in [("U272","433.400000"), ("U274","433.425000"),("U276","433.450000"),("U278","433.475000"),("U280","433.500000"),("U282","433.525000"),("U284","433.550000"),("U286","433.575000"), ("U288","433.600000")]:
         txfreq = dmrchan[1]
         rxfreq = txfreq
@@ -97,7 +114,8 @@ def addsimplex(out_db):
         write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
         memname = dmrchan[0] + " FM Simplex"
         write_line(out_db,[memname, "FM", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Always", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "NONE", "NONE", ccode, "NONE", "1", ts])
-
+    
+    # Additional Frequencies at 432 MHz - for digital communications as per RSGB Band Plan
     for dmrchan in ["432.625000", "432.650000","432.675000"]:
         txfreq = dmrchan
         rxfreq = txfreq
@@ -106,6 +124,47 @@ def addsimplex(out_db):
         ccode = "1"
         memname = dmrchan[:7] + " DV Simplex"
         write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
+
+    # Custom channels, designed to be edited on the radio itself, via menu -> programming.
+    
+    # DMR - Repeater TS1
+    callsign = "Cust.DMR.Rpt1"
+    tg = "9"
+    ts = "1"
+    location = ""
+    txfreq = "430.4625"
+    rxfreq = "439.4625"
+    ccode = "3"
+    write_line(out_db,[callsign+" "+tg+"/"+ts+" "+location, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "000.0", "000.0", "180", "Off", "Off", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
+
+    # DMR - Repeater TS2
+    callsign = "Cust.DMR.Rpt2"
+    ts = "2"
+    write_line(out_db,[callsign+" "+tg+"/"+ts+" "+location, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "000.0", "000.0", "180", "Off", "Off", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
+    
+    
+    # DMR - Simplex (Direct Mode)
+    txfreq = "438.612500"
+    rxfreq = txfreq
+    tg = "9"
+    ts = "1"
+    ccode = "1"
+    memname = "Cust.DMR.Simplex"
+    write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
+    
+    # FM - Simplex
+    memname = "Cust.FM.Simplex"
+    txfreq = "433.500000"
+    rxfreq = txfreq
+    write_line(out_db,[memname, "FM", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Always", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "NONE", "NONE", ccode, "NONE", "1", ts])
+ 
+    # FM - Repeater
+    callsign = "Cust.FM.Rpt"
+    location = ""
+    txfreq = "433.350000"
+    rxfreq = txfreq
+    fcode = "082.5"
+    write_line(out_db,[callsign+" "+location, "FM", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Always", "Low", "Low", "Infinite", "0", "LOW", "No", "No", "No", "No", "No", fcode, fcode, "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "NONE", "NONE", "0", "NONE", "1", "0"])
 
 
 # Check arguments handed to script
@@ -124,7 +183,7 @@ else:							        # No filenames handed to script NOT OK
 # Generate output file name
 #count = len(infile) - 4
 #outfile = infile[:count] + "_conv.csv"
-outfile = "dmr-contacts.csv"
+outfile = "dmr-channels.csv"
 print("\nRunning conversion of "+infile+ " to "+outfile)
 
 # Open input and output files
@@ -142,14 +201,21 @@ for record in in_db:
         
         elif band == "70CM" and ( mode == "DV" or mode == "MULTI" ):
             if ishomerepeater(callsign):
-                talkgroups = [(1,1), (2,1), (9,1), (9,2), (13,1), (80,1), (81,1), (82,1), (83,1), (84,1), (113,1), (123,1), (129,1), (235,1), (801,2), (810,2), (820,2), (840,2), (850,2), (9990,2)]
+                talkgroups = home_tgs
             else:
-                talkgroups = [(9,2)]
+                talkgroups = other_tgs
             for talkgroup in talkgroups:
                 write_line(out_db, dv_format(record, str(talkgroup[0]), str(talkgroup[1]) ))
 
 # Add Simplex frequencies
 addsimplex(out_db)
 
-# Close output file
+# Close output file - dmr-channels.csv
 out_db.close()
+
+# Write dmr-contacts.csv
+out_db = open("dmr-contacts.csv", 'w', newline ='')
+addcontacts(out_db)
+out_db.close()
+
+
