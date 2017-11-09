@@ -52,7 +52,9 @@ def dv_format(record,tg,ts):      # Digital Voice Format
     # keeper = record[11]
     # lat = record[12]
     # lon = record[13]
-    return [callsign+" "+tg+"/"+ts+" "+location, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "000.0", "000.0", "180", "Off", "Off", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts]
+    # rxgrp = "NONE"
+    rxgrp = "TS"+ts
+    return [callsign+" "+tg+"/"+ts+" "+location, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "000.0", "000.0", "180", "Off", "Off", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, rxgrp, ccode, "NONE", "1", ts]
  
 def write_line(out_db, line):       # Write a given line (string) to the out_db file
     csv.writer(out_db, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL).writerow(line)
@@ -88,7 +90,8 @@ def addsimplex(out_db):
         tg = "9"
         ts = "1"
         ccode = "1"
-        write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
+        rxgrp = "NONE"
+        write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, rxgrp, ccode, "NONE", "1", ts])
 
     # UK Amateur Radio UHF 430-440 MHz
     # DMR Simplex Channels at 438 MHz. DV Calling @ 438.6125 as per RSGB Band Plan
@@ -101,7 +104,8 @@ def addsimplex(out_db):
         tg = "9"
         ts = "1"
         ccode = "1"
-        write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
+        rxgrp = "NONE"
+        write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, rxgrp, ccode, "NONE", "1", ts])
     
     # FM/DV Simplex Channels at 433 MHz as per RSGB Band Plan
     for dmrchan in [("U272","433.400000"), ("U274","433.425000"),("U276","433.450000"),("U278","433.475000"),("U280","433.500000"),("U282","433.525000"),("U284","433.550000"),("U286","433.575000"), ("U288","433.600000")]:
@@ -110,20 +114,50 @@ def addsimplex(out_db):
         tg = "9"
         ts = "1"
         ccode = "1"
-        memname = dmrchan[0] + " DV Simplex"
-        write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
-        memname = dmrchan[0] + " FM Simplex"
+        rxgrp = "NONE"
+        if dmrchan[0] == "U276":
+            memname = dmrchan[0] + " DV Call IARU"
+        else:
+            memname = dmrchan[0] + " DV Simplex"
+        write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, rxgrp, ccode, "NONE", "1", ts])
+        if dmrchan[0] == "U280":
+            memname = dmrchan[0] + " FM Call"
+        else:
+            memname = dmrchan[0] + " FM Simplex"
         write_line(out_db,[memname, "FM", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Always", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "NONE", "NONE", ccode, "NONE", "1", ts])
     
-    # Additional Frequencies at 432 MHz - for digital communications as per RSGB Band Plan
-    for dmrchan in ["432.625000", "432.650000","432.675000"]:
+    # Additional Frequencies at 430-440 MHz - for digital communications as per RSGB Band Plan - at least the band edges.
+    for dmrchan in ["430.990000", "432.625000", "432.650000", "432.675000", "433.625000", "433.650000", "433.675000", "433.800000", "434.000000", "434.250000", "438.025000", "438.100000", "438.175000", "439.600000", "439.750000", "440.000000"]:
         txfreq = dmrchan
         rxfreq = txfreq
         tg = "9"
         ts = "1"
         ccode = "1"
+        rxgrp = "NONE"
         memname = dmrchan[:7] + " DV Simplex"
-        write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
+        write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, rxgrp, ccode, "NONE", "1", ts])
+
+    # UK Raynet Frequencies - 70 cm
+    for channel in ["433.700000", "433.725000","433.750000","433.775000"]:
+        memname = "Ray.S."+channel
+        txfreq = channel
+        rxfreq = txfreq
+        ccode = "1"
+        ts = "1"
+        write_line(out_db,[memname, "FM", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Always", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "NONE", "NONE", ccode, "NONE", "1", ts])
+ 
+    callsign = "Ray.Rpt.438.400000"
+    location = ""
+    txfreq = "430.800000"
+    rxfreq = "438.400000"
+    ccode = "NONE"
+    write_line(out_db,[callsign+" "+location, "FM", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Always", "Low", "Low", "Infinite", "0", "LOW", "No", "No", "No", "No", "No", ccode, ccode, "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "NONE", "NONE", "0", "NONE", "1", "0"])
+
+    callsign = "Ray.Rpt.432.775000"
+    txfreq = "434.375000"
+    rxfreq = "432.775000"
+    write_line(out_db,[callsign+" "+location, "FM", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Always", "Low", "Low", "Infinite", "0", "LOW", "No", "No", "No", "No", "No", ccode, ccode, "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "NONE", "NONE", "0", "NONE", "1", "0"])
+
 
     # Custom channels, designed to be edited on the radio itself, via menu -> programming.
     
@@ -135,12 +169,13 @@ def addsimplex(out_db):
     txfreq = "430.4625"
     rxfreq = "439.4625"
     ccode = "3"
-    write_line(out_db,[callsign+" "+tg+"/"+ts+" "+location, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "000.0", "000.0", "180", "Off", "Off", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
+    rxgrp = "NONE"
+    write_line(out_db,[callsign+" "+tg+"/"+ts+" "+location, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "000.0", "000.0", "180", "Off", "Off", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, rxgrp, ccode, "NONE", "1", ts])
 
     # DMR - Repeater TS2
     callsign = "Cust.DMR.Rpt2"
     ts = "2"
-    write_line(out_db,[callsign+" "+tg+"/"+ts+" "+location, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "000.0", "000.0", "180", "Off", "Off", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
+    write_line(out_db,[callsign+" "+tg+"/"+ts+" "+location, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "000.0", "000.0", "180", "Off", "Off", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, rxgrp, ccode, "NONE", "1", ts])
     
     
     # DMR - Simplex (Direct Mode)
@@ -149,8 +184,9 @@ def addsimplex(out_db):
     tg = "9"
     ts = "1"
     ccode = "1"
+    rxgrp = "NONE"
     memname = "Cust.DMR.Simplex"
-    write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, "NONE", ccode, "NONE", "1", ts])
+    write_line(out_db,[memname, "DMR", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Color Code Free", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "TG"+tg, rxgrp, ccode, "NONE", "1", ts])
     
     # FM - Simplex
     memname = "Cust.FM.Simplex"
@@ -166,7 +202,15 @@ def addsimplex(out_db):
     fcode = "082.5"
     write_line(out_db,[callsign+" "+location, "FM", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Always", "Low", "Low", "Infinite", "0", "LOW", "No", "No", "No", "No", "No", fcode, fcode, "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "NONE", "NONE", "0", "NONE", "1", "0"])
 
-
+    # Custom Frequencies
+    for channel in ["457.012500", "457.037500", "457.137500", "457.237500", "457.487500"]:
+        memname = channel
+        txfreq = channel
+        rxfreq = txfreq
+        ccode = "1"
+        ts = "1"
+        write_line(out_db,[memname, "FM", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Always", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "NONE", "NONE", ccode, "NONE", "1", ts])
+ 
 # Check arguments handed to script
 if len(sys.argv) > 1 and sys.argv[1].endswith(".csv"): # One filename handed to script OK
     infile = sys.argv[1]
