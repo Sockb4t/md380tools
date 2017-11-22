@@ -203,10 +203,10 @@ def addsimplex(out_db):
     write_line(out_db,[callsign+" "+location, "FM", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Always", "Low", "Low", "Infinite", "0", "LOW", "No", "No", "No", "No", "No", fcode, fcode, "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "NONE", "NONE", "0", "NONE", "1", "0"])
 
     # Custom Frequencies
-    for channel in ["457.012500", "457.037500", "457.137500", "457.237500", "457.487500"]:
-        memname = channel
-        txfreq = channel
-        rxfreq = txfreq
+    for freq in [(457.0125,457.0125,"C3"),(457.0375,457.0375,"C1"),(457.0875,462.5875,"C2"),(457.1375,462.6375,"C5"),(457.1875,457.1875,"C4"),(457.2375,457.2375,"C6")]:
+        memname = "FRS-"+freq[2]
+        txfreq = str(freq[1])+"00"
+        rxfreq = str(freq[0])+"00"
         ccode = "1"
         ts = "1"
         write_line(out_db,[memname, "FM", "12.5", txfreq, rxfreq, "-NULL-", "NORMAL", "Always", "Low", "Low", "180", "0", "LOW", "No", "No", "No", "No", "No", "NONE", "NONE", "180", "Off", "Off", "YES", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NO", "NONE", "NONE", "NONE", ccode, "NONE", "1", ts])
