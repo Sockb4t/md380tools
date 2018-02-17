@@ -876,7 +876,7 @@ void draw_datetime_row_hook()
    the setting information and a picture or two. */
 void display_credits()
 {
-    drawtext(L"(\__/)   MD380 ", 160, 20);
+    drawtext(L"(\\__/)   MD380 ", 160, 20);
     drawtext(L"(O.o )  2E0CXR ", 160, 60);
     drawtext(L"(> < ) Homebrew", 160, 100);
 #ifdef MD380_d13_020
