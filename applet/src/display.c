@@ -876,9 +876,9 @@ void draw_datetime_row_hook()
    the setting information and a picture or two. */
 void display_credits()
 {
-    drawtext(L"Homebrew Firmware ", 160, 20);
-    drawtext(L"MD380Tools by KK4VCZ ", 160, 60);
-    drawtext(L"forked by 2E0CXR ", 160, 100);
+    drawtext(L"(\__/)   MD380 ", 160, 20);
+    drawtext(L"(O.o )  2E0CXR ", 160, 60);
+    drawtext(L"(> < ) Homebrew", 160, 100);
 #ifdef MD380_d13_020
     drawtext(L"@ D13.020", 160, 140);
 #endif
